@@ -56,9 +56,9 @@ class puphpet_nginx (
       $member_array = $package_array = split($member, ':')
 
       if count($member_array) == 2
-        and ! defined(Puphpet::Firewall::Port[$member_array[1]])
+        and ! defined(Puphpet::Firewall::Port["${member_array[1]}"])
       {
-        puphpet::firewall::port { $member_array[1]: }
+        puphpet::firewall::port { "${member_array[1]}": }
       }
     }
   }
@@ -175,19 +175,22 @@ class puphpet_nginx (
   }
 
   each( $vhosts ) |$key, $vhost| {
-    exec { "exec mkdir -p ${vhost['www_root']} @ key ${key}":
-      command => "mkdir -p ${vhost['www_root']}",
-      user    => $webroot_user,
-      group   => $webroot_group,
-      creates => $vhost['www_root'],
-      require => File[$www_location],
-    }
+    # Could be proxy vhost
+    if $vhost['www_root'] != '' {
+      exec { "exec mkdir -p ${vhost['www_root']} @ key ${key}":
+        command => "mkdir -p ${vhost['www_root']}",
+        user    => $webroot_user,
+        group   => $webroot_group,
+        creates => $vhost['www_root'],
+        require => File[$www_location],
+      }
 
-    if ! defined(File[$vhost['www_root']]) {
-      file { $vhost['www_root']:
-        ensure  => directory,
-        mode    => '0775',
-        require => Exec["exec mkdir -p ${vhost['www_root']} @ key ${key}"],
+      if ! defined(File[$vhost['www_root']]) {
+        file { $vhost['www_root']:
+          ensure  => directory,
+          mode    => '0775',
+          require => Exec["exec mkdir -p ${vhost['www_root']} @ key ${key}"],
+        }
       }
     }
 
@@ -305,9 +308,7 @@ class puphpet_nginx (
 
       # If www_root was removed with all the trimmings,
       # add it back it
-      if ! defined($location_no_root['fastcgi'])
-        or empty($location_no_root['fastcgi'])
-      {
+      if ! array_true($location_no_root, 'fastcgi') {
         $location_merged = merge({
           'www_root' => $vhost['www_root'],
         }, $location_no_root)
@@ -318,8 +319,8 @@ class puphpet_nginx (
       create_resources(nginx::resource::location, { "${lkey}" => $location_merged })
     }
 
-    if ! defined(Puphpet::Firewall::Port[$vhost['listen_port']]) {
-      puphpet::firewall::port { $vhost['listen_port']: }
+    if ! defined(Puphpet::Firewall::Port["${vhost['listen_port']}"]) {
+      puphpet::firewall::port { "${vhost['listen_port']}": }
     }
   }
 

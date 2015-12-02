@@ -1,5 +1,5 @@
-class puphpet_mariadb (
-  $mariadb,
+class puphpet_mysql (
+  $mysql,
   $apache,
   $nginx,
   $php,
@@ -16,14 +16,19 @@ class puphpet_mariadb (
     $webserver_restart = false
   }
 
-  $version = to_string($mariadb['settings']['version'])
+  $version = to_string($mysql['settings']['version'])
 
-  class { 'puphpet::mariadb':
+  class { 'puphpet::mysql::repo':
     version => $version,
   }
 
-  $server_package = $puphpet::params::mariadb_package_server_name
-  $client_package = $puphpet::params::mariadb_package_client_name
+  if $version in ['55', '5.5'] {
+    $server_package = $puphpet::mysql::params::mysql_server_55
+    $client_package = $puphpet::mysql::params::mysql_client_55
+  } elsif $version in ['56', '5.6'] {
+    $server_package = $puphpet::mysql::params::mysql_server_56
+    $client_package = $puphpet::mysql::params::mysql_client_56
+  }
 
   if array_true($php, 'install') {
     $php_package = 'php'
@@ -33,8 +38,8 @@ class puphpet_mariadb (
     $php_package = false
   }
 
-  if empty($mariadb['settings']['root_password']) {
-    fail( 'MariaDB requires choosing a root password. Please check your config.yaml file.' )
+  if !array_true($mysql['settings'], 'root_password') {
+    fail( 'MySQL requires choosing a root password. Please check your config.yaml file.' )
   }
 
   $override_options = deep_merge($mysql::params::default_options, {
@@ -47,8 +52,8 @@ class puphpet_mariadb (
     'package_name'     => $server_package,
     'restart'          => true,
     'override_options' => $override_options,
-    'service_name'     => 'mysql',
-  }, $mariadb['settings']), 'version')
+    require            => Class['puphpet::mysql::repo'],
+  }, $mysql['settings']), 'version')
 
   create_resources('class', {
     'mysql::server' => $settings
@@ -56,49 +61,7 @@ class puphpet_mariadb (
 
   class { 'mysql::client':
     package_name => $client_package,
-  }
-
-  $mariadb_user = $override_options['mysqld']['user']
-
-  # Ensure the user exists
-  if ! defined(User[$mariadb_user]) {
-    user { $mariadb_user:
-      ensure => present,
-    }
-  }
-
-  # Ensure the group exists
-  if ! defined(Group[$mysql::params::root_group]) {
-    group { $mysql::params::root_group:
-      ensure => present,
-    }
-  }
-
-  # Ensure the data directory exists
-  if ! defined(File[$mysql::params::datadir]) {
-    file { $mysql::params::datadir:
-      ensure => directory,
-      group  => $mysql::params::root_group,
-      before => Class['mysql::server']
-    }
-  }
-
-  $mariadb_pidfile = $override_options['mysqld']['pid-file']
-
-  # Ensure PID file directory exists
-  exec { 'Create pidfile parent directory':
-    command => "mkdir -p $(dirname ${mariadb_pidfile})",
-    unless  => "test -d $(dirname ${mariadb_pidfile})",
-    before  => Class['mysql::server'],
-    require => [
-      User[$mariadb_user],
-      Group[$mysql::params::root_group]
-    ],
-  }
-  -> exec { 'Set pidfile parent directory permissions':
-    command => "chown \
-      ${mariadb_user}:${mysql::params::root_group} \
-      $(dirname ${mariadb_pidfile})",
+    require      => Class['puphpet::mysql::repo'],
   }
 
   Mysql_user <| |>
@@ -106,8 +69,8 @@ class puphpet_mariadb (
   -> Mysql_grant <| |>
 
   # config file could contain no users key
-  $users = array_true($mariadb, 'users') ? {
-    true    => $mariadb['users'],
+  $users = array_true($mysql, 'users') ? {
+    true    => $mysql['users'],
     default => { }
   }
 
@@ -131,8 +94,8 @@ class puphpet_mariadb (
   }
 
   # config file could contain no databases key
-  $databases = array_true($mariadb, 'databases') ? {
-    true    => $mariadb['databases'],
+  $databases = array_true($mysql, 'databases') ? {
+    true    => $mysql['databases'],
     default => { }
   }
 
@@ -151,7 +114,7 @@ class puphpet_mariadb (
 
     create_resources( mysql_database, { "${name}" => $merged })
 
-    if $sql {
+    if $sql != '' {
       # Run import only on initial database creation
       $touch_file = "/.puphpet-stuff/db-import-${name}"
 
@@ -168,8 +131,8 @@ class puphpet_mariadb (
   }
 
   # config file could contain no grants key
-  $grants = array_true($mariadb, 'grants') ? {
-    true    => $mariadb['grants'],
+  $grants = array_true($mysql, 'grants') ? {
+    true    => $mysql['grants'],
     default => { }
   }
 
@@ -215,7 +178,7 @@ class puphpet_mariadb (
     }
   }
 
-  if array_true($mariadb, 'adminer')
+  if array_true($mysql, 'adminer')
     and $php_package
     and ! defined(Class['puphpet::adminer'])
   {

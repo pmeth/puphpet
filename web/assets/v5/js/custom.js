@@ -429,7 +429,6 @@ PUPHPET.toggleDisplayOnSelect = function() {
         }
 
         if (!$(this).is(':checked')) {
-            console.log('data-vis-show-target is not checked');
             return;
         }
 
@@ -445,7 +444,6 @@ PUPHPET.toggleDisplayOnSelect = function() {
         }
 
         if ($(this).is(':checked')) {
-            console.log('data-invis-show-target is checked');
             return;
         }
 
@@ -461,7 +459,6 @@ PUPHPET.toggleDisplayOnSelect = function() {
         }
 
         if (!$(this).is(':checked')) {
-            console.log('data-vis-hide-target is not checked');
             return;
         }
 
@@ -477,7 +474,6 @@ PUPHPET.toggleDisplayOnSelect = function() {
         }
 
         if ($(this).is(':checked')) {
-            console.log('data-invis-hide-target is checked');
             return;
         }
 

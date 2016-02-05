@@ -3,6 +3,8 @@ target: ~
 vm:
     box: softlayer
     hostname: master
+    multi_machine_enabled: ~
+    multi_machine: []
     provider:
         softlayer:
             username: ~

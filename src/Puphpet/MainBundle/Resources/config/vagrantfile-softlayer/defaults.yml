@@ -2,6 +2,13 @@ target: ~
 
 vm:
     hostname: softlayer-server
+    multi_machine_enabled: 0
+    multi_machine:
+        -
+            id: machine1
+            hostname: machine1
+            datacenter: DAL01
+            domain: machine.com
     provider:
         softlayer:
             username: SOFTLAYER_USERNAME

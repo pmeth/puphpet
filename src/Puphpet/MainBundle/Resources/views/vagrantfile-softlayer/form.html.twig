@@ -1,4 +1,5 @@
 {% set providerChosen = (data.target == 'softlayer') ? true : false %}
+{% set multiMachine = (data.vm.multi_machine_enabled is defined and data.vm.multi_machine_enabled) ? true : false %}
 
 <div class="section-header">
     <h1>SoftLayer Server Details</h1>
@@ -69,43 +70,6 @@
 
         <div class="form-group col-xs-6">
             <div class="help-text">
-                Name your SoftLayer server as it will appear in the Control Panel.
-            </div>
-            <label for="vagrantfile-vm-hostname">Server Name</label>
-            <input type="text" id="vagrantfile-vm-hostname"
-                   name="vagrantfile[vm][hostname]"
-                   class="form-control" placeholder="AWESOME"
-                   value="{{ data.vm.hostname }}" />
-        </div>
-
-        <div class="form-group col-xs-6">
-            <div class="help-text">
-                <p>Must end in valid TLD.</p>
-
-                <p>Your VM will be named {HOSTNAME}.{DOMAIN}</p>
-
-                <p>The hostname and domain must be alphanumeric strings that may be separated by periods '.'.
-                    The only other allowable special character is the dash '-' However the special
-                    characters '.' and '-' may not be consecutive. Each alphanumeric string separated by a
-                    period is considered a label. Labels must begin and end with an alphanumeric character.
-                    Each label cannot be solely comprised of digits and must be between 1-63 characters in
-                    length. The last label, the TLD (top level domain) must be between 2-6 alphabetic
-                    characters. The domain portion must consist of least one label followed by a period '.'
-                    then ending with the TLD label. Combining the hostname, followed by a period '.',
-                    followed by the domain gives the FQDN (fully qualified domain name), which may not
-                    exceed 253 characters in total length.</p>
-            </div>
-            <label for="vagrantfile-vm-provider-softlayer-domain">Domain</label>
-            <input type="text" id="vagrantfile-vm-provider-softlayer-domain"
-                   name="vagrantfile[vm][provider][softlayer][domain]"
-                   class="form-control"
-                   value="{{ data.vm.provider.softlayer.domain }}" />
-        </div>
-
-        <div class="clearfix"></div>
-
-        <div class="form-group col-xs-6">
-            <div class="help-text">
                 <a href="http://www.softlayer.com/virtual-servers"
                    target="_blank">Pricing information</a>.
                 SoftLayer charges by the hour, but also shows what a full month would cost.
@@ -142,25 +106,6 @@
 
         <div class="form-group col-xs-6">
             <div class="help-text">
-                <p>Choose the one closest to you, or your target audience!</p>
-
-                <p>If you get an error that looks like
-                    'There is insufficient Local disk resources in {DATACENTER} to create the following
-                    guests: {HOSTNAME}', choose a different datacenter.</p>
-            </div>
-            <label for="vagrantfile-vm-provider-softlayer-datacenter">Datacenter Location</label>
-            <select id="vagrantfile-vm-provider-softlayer-datacenter"
-                   name="vagrantfile[vm][provider][softlayer][datacenter]"
-                   class="form-control select-tag">
-                {% for key, dc in data.available.datacenters %}
-                    <option value="{{ key }}"
-                        {% if key == data.vm.provider.softlayer.datacenter %}selected{% endif %}>{{ dc }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="form-group col-xs-6">
-            <div class="help-text">
                 Username you use to login to SoftLayer
             </div>
             <label for="vagrantfile-vm-provider-softlayer-username">SoftLayer Account Username</label>
@@ -169,8 +114,6 @@
                    class="form-control" placeholder="SOFTLAYER USERNAME"
                    value="{{ data.vm.provider.softlayer.username }}" />
         </div>
-
-        <div class="clearfix"></div>
 
         <div class="form-group col-xs-6">
             <div class="help-text">
@@ -183,6 +126,8 @@
                    class="form-control" placeholder="SOFTLAYER API KEY"
                    value="{{ data.vm.provider.softlayer.api_key }}" />
         </div>
+
+        <div class="clearfix"></div>
 
         <div class="form-group col-xs-6">
             <div class="help-text">
@@ -197,18 +142,120 @@
                    value="{{ data.ssh.private_key_path }}" />
         </div>
 
-        <div class="clearfix"></div>
-
         <div class="form-group col-xs-6">
             <div class="help-text">
                 This must be a public key associated with your account from
                 <a href="https://control.softlayer.com/devices/sshkeys" target="_blank">this page</a>.
             </div>
-            <label for="vagrantfile-vm-provider-softlayer-ssh_key">Local Public Key Path</label>
+            <label for="vagrantfile-vm-provider-softlayer-ssh_key">Softlayer SSH Key Name</label>
             <input type="text" id="vagrantfile-vm-provider-softlayer-ssh_key"
                    name="vagrantfile[vm][provider][softlayer][ssh_key]"
-                   class="form-control" placeholder="~/.ssh/id_rsa.pub"
-                   value="{{ data.ssh.public_key_path }}" />
+                   class="form-control" placeholder="SOFTLAYER SSH KEY NAME"
+                   value="{{ data.vm.provider.softlayer.ssh_key }}" />
+        </div>
+
+        <div class="clearfix"></div>
+
+        <div class="form-group">
+            <div class="clearfix"><label>Enable Multi Machine</label></div>
+
+            <input type="hidden" name="vagrantfile[vm][multi_machine_enabled]" value="0" />
+
+            <label class="radio-tile mini set-width">
+                <span class="help-text">
+                    Check to enable multi machine support
+                </span>
+                <input type="checkbox" name="vagrantfile[vm][multi_machine_enabled]"
+                       class="invisible show-on-select show-on-unselect hide-on-select hide-on-unselect"
+                       {% if multiMachine %}checked{% endif %} value="1"
+                       data-vis-show-target="#vagrantfile-vm-multi_machine-softlayer_container"
+                       data-invis-show-target="#vagrantfile-vm-single_machine-softlayer_container"
+
+                       data-vis-hide-target="#vagrantfile-vm-single_machine-softlayer_container"
+                       data-invis-hide-target="#vagrantfile-vm-multi_machine-softlayer_container"
+                    />
+                <span class="content">
+                    <span class="header">
+                        <i class="icon"></i>
+                        <span class="title">Enable Multi Machine</span>
+                    </span>
+                </span>
+            </label>
+        </div>
+
+        <div class="clearfix"></div>
+
+        <div class="{% if multiMachine %}hidden{% endif %}" id="vagrantfile-vm-single_machine-softlayer_container">
+            <div class="form-group col-xs-6">
+                <div class="help-text">
+                    The hostname the machine should have. This will be combined with the domain below
+                    to make <code>{hostname}.{domain}</code>.
+                </div>
+                <label for="vagrantfile-vm-hostname">Server Name</label>
+                <input type="text" id="vagrantfile-vm-hostname"
+                       name="vagrantfile[vm][hostname]"
+                       class="form-control" placeholder="AWESOME"
+                       value="{{ data.vm.hostname }}" />
+            </div>
+
+            <div class="form-group col-xs-6">
+                <div class="help-text">
+                    <p>Must end in valid TLD.</p>
+
+                    <p>Your VM will be named {HOSTNAME}.{DOMAIN}</p>
+
+                    <p>The hostname and domain must be alphanumeric strings that may be separated by periods '.'.
+                        The only other allowable special character is the dash '-' However the special
+                        characters '.' and '-' may not be consecutive. Each alphanumeric string separated by a
+                        period is considered a label. Labels must begin and end with an alphanumeric character.
+                        Each label cannot be solely comprised of digits and must be between 1-63 characters in
+                        length. The last label, the TLD (top level domain) must be between 2-6 alphabetic
+                        characters. The domain portion must consist of least one label followed by a period '.'
+                        then ending with the TLD label. Combining the hostname, followed by a period '.',
+                        followed by the domain gives the FQDN (fully qualified domain name), which may not
+                        exceed 253 characters in total length.</p>
+                </div>
+                <label for="vagrantfile-vm-provider-softlayer-domain">Domain</label>
+                <input type="text" id="vagrantfile-vm-provider-softlayer-domain"
+                       name="vagrantfile[vm][provider][softlayer][domain]"
+                       class="form-control"
+                       value="{{ data.vm.provider.softlayer.domain }}" />
+            </div>
+
+            <div class="clearfix"></div>
+
+            <div class="form-group col-xs-6">
+                <div class="help-text">
+                    <p>Choose the one closest to you, or your target audience!</p>
+
+                    <p>If you get an error that looks like
+                        'There is insufficient Local disk resources in {DATACENTER} to create the following
+                        guests: {HOSTNAME}', choose a different datacenter.</p>
+                </div>
+                <label for="vagrantfile-vm-provider-softlayer-datacenter">Datacenter Location</label>
+                <select id="vagrantfile-vm-provider-softlayer-datacenter"
+                       name="vagrantfile[vm][provider][softlayer][datacenter]"
+                       class="form-control select-tag">
+                    {% for key, dc in data.available.datacenters %}
+                        <option value="{{ key }}"
+                            {% if key == data.vm.provider.softlayer.datacenter %}selected{% endif %}>{{ dc }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="clearfix"></div>
+
+        <div class="{% if not multiMachine %}hidden{% endif %}" id="vagrantfile-vm-multi_machine-softlayer_container">
+            {% for multi_machine in data.vm.multi_machine %}
+                {% include 'PuphpetMainBundle:vagrantfile-softlayer/sections:multi-machine.html.twig' with {
+                    'multi_machine': multi_machine,
+                    'datacenters': data.available.datacenters
+                } %}
+            {% endfor %}
+
+            <a href="#" data-source-url="{{ path('puphpet.vagrantfile_softlayer.multi_machine') }}"
+               class="add-block"><i class="fa fa-level-up fa-rotate-90"></i> Add another machine</a>
         </div>
 
         <div class="clearfix"></div>

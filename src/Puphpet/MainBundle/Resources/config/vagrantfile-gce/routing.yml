@@ -2,6 +2,10 @@ puphpet.vagrantfile_gce.homepage:
     pattern:  /
     defaults: { _controller: PuphpetMainBundle:VagrantfileGce:index }
 
+puphpet.vagrantfile_gce.multi_machine:
+    pattern: /multi-machine
+    defaults: { _controller: PuphpetMainBundle:VagrantfileGce:multiMachine }
+
 puphpet.vagrantfile_gce.synced_folder:
     pattern: /synced-folder
     defaults: { _controller: PuphpetMainBundle:VagrantfileGce:syncedFolder }

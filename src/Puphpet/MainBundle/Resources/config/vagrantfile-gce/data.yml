@@ -3,9 +3,10 @@ target: ~
 vm:
     box: gce
     hostname: master
+    multi_machine_enabled: ~
+    multi_machine: []
     provider:
         gce:
-            project_id: ~
             client_email: ~
             key_location: ~
             machine_type: ~

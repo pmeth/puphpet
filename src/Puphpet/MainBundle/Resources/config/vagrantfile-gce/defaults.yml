@@ -1,6 +1,14 @@
 target: ~
 
 vm:
+    multi_machine_enabled: 0
+    multi_machine:
+        -
+            id: machine1
+            hostname: machine1.puphpet
+            name: machine1-puphpet
+            machine_type: n1-standard-1
+            zone: us-central1-a
     provider:
         gce:
             project_id: GCE_PROJECT_ID

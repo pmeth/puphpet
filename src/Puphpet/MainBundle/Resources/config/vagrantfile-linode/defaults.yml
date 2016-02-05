@@ -1,6 +1,13 @@
 target: ~
 
 vm:
+    multi_machine_enabled: 0
+    multi_machine:
+        -
+            id: machine1
+            hostname: machine1.puphpet
+            datacenter: dfw
+            label: machine1-puphpet
     provider:
         linode:
             distribution: Ubuntu 14.04 LTS
@@ -8,6 +15,7 @@ vm:
             plan: 1024
             token: LINODE_API_KEY
             ssh_key_name: Vagrant
+            label: puphpet-box
     synced_folder:
         -
             source: ./

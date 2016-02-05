@@ -8,7 +8,6 @@ vm:
             hostname: machine1.puphpet
             server_name: machine1-puphpet
             region: dfw
-
     provider:
         rackspace:
             server_name: rackspace-server

@@ -13,6 +13,14 @@ class VagrantfileRackspaceController extends Controller
         ]);
     }
 
+    public function multiMachineAction()
+    {
+        return $this->render('PuphpetMainBundle:vagrantfile-rackspace/sections:multi-machine.html.twig', [
+            'multi_machine' => $this->getData()['empty_multi_machine'],
+            'regions'       => $this->getData()['regions'],
+        ]);
+    }
+
     public function syncedFolderAction()
     {
         return $this->render('PuphpetMainBundle:vagrantfile-rackspace/sections:synced-folder.html.twig', [

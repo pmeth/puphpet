@@ -3,6 +3,8 @@ target: ~
 vm:
     box: rackspace
     hostname: master
+    multi_machine_enabled: ~
+    multi_machine: []
     provider:
         rackspace:
             server_name: ~

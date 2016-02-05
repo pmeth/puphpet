@@ -1,6 +1,14 @@
 target: ~
 
 vm:
+    multi_machine_enabled: 0
+    multi_machine:
+        -
+            id: machine1
+            hostname: machine1.puphpet
+            server_name: machine1-puphpet
+            region: dfw
+
     provider:
         rackspace:
             server_name: rackspace-server

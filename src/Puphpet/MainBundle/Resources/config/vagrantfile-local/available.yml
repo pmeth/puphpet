@@ -114,3 +114,12 @@ empty_synced_folder:
 empty_forwarded_port:
     host: ~
     guest: ~
+
+empty_multi_machine:
+    id: ~
+    private_network: ~
+    hostname: ~
+    forwarded_port:
+        -
+            host: ~
+            guest: ~

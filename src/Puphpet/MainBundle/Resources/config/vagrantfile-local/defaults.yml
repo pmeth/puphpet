@@ -6,6 +6,16 @@ vm:
     hostname: local.puphpet
     chosen_provider: virtualbox
     box_version: ~
+    multi_machine_enabled: 0
+    multi_machine:
+        -
+            id: machine1
+            private_network: 192.168.56.101
+            hostname: machine1.puphpet
+            forwarded_port:
+                -
+                    host: ~
+                    guest: ~
     provider:
         virtualbox:
             modifyvm:

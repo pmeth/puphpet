@@ -428,6 +428,27 @@ PUPHPET.toggleDisplayOnSelect = function() {
             return;
         }
 
+        if (!$(this).is(':checked')) {
+            console.log('data-vis-show-target is not checked');
+            return;
+        }
+
+        var targetId = snakeCaseToDash(dataValue);
+        $(targetId).hide().removeClass('hidden').slideDown();
+    });
+
+    $(document).on('change', '.show-on-unselect', function(e) {
+        var dataValue = this.getAttribute('data-invis-show-target');
+
+        if (dataValue == undefined) {
+            return;
+        }
+
+        if ($(this).is(':checked')) {
+            console.log('data-invis-show-target is checked');
+            return;
+        }
+
         var targetId = snakeCaseToDash(dataValue);
         $(targetId).hide().removeClass('hidden').slideDown();
     });
@@ -436,6 +457,27 @@ PUPHPET.toggleDisplayOnSelect = function() {
         var dataValue = this.getAttribute('data-vis-hide-target');
 
         if (dataValue == undefined) {
+            return;
+        }
+
+        if (!$(this).is(':checked')) {
+            console.log('data-vis-hide-target is not checked');
+            return;
+        }
+
+        var targetId = snakeCaseToDash(dataValue);
+        $(targetId).slideUp();
+    });
+
+    $(document).on('change', '.hide-on-unselect', function(e) {
+        var dataValue = this.getAttribute('data-invis-hide-target');
+
+        if (dataValue == undefined) {
+            return;
+        }
+
+        if ($(this).is(':checked')) {
+            console.log('data-invis-hide-target is checked');
             return;
         }
 

@@ -165,11 +165,11 @@
                 <input type="checkbox" name="vagrantfile[vm][multi_machine_enabled]"
                        class="invisible show-on-select show-on-unselect hide-on-select hide-on-unselect"
                        {% if multiMachine %}checked{% endif %} value="1"
-                       data-vis-show-target="#vagrantfile-vm-multi_machine-container"
-                       data-invis-show-target="#vagrantfile-vm-single_machine-container"
+                       data-vis-show-target="#vagrantfile-vm-multi_machine-local_container"
+                       data-invis-show-target="#vagrantfile-vm-single_machine-local_container"
 
-                       data-vis-hide-target="#vagrantfile-vm-single_machine-container"
-                       data-invis-hide-target="#vagrantfile-vm-multi_machine-container"
+                       data-vis-hide-target="#vagrantfile-vm-single_machine-local_container"
+                       data-invis-hide-target="#vagrantfile-vm-multi_machine-local_container"
                     />
                 <span class="content">
                     <span class="header">
@@ -182,7 +182,7 @@
 
         <div class="clearfix"></div>
 
-        <div class="{% if multiMachine %}hidden{% endif %}" id="vagrantfile-vm-single_machine-container">
+        <div class="{% if multiMachine %}hidden{% endif %}" id="vagrantfile-vm-single_machine-local_container">
             <div class="form-group col-xs-6">
                 <div class="help-text">
                     IP address to use for accessing the VM. This is the IP address you will
@@ -223,7 +223,7 @@
 
         <div class="clearfix"></div>
 
-        <div class="{% if not multiMachine %}hidden{% endif %}" id="vagrantfile-vm-multi_machine-container">
+        <div class="{% if not multiMachine %}hidden{% endif %}" id="vagrantfile-vm-multi_machine-local_container">
             {% for multi_machine in data.vm.multi_machine %}
                 {% include 'PuphpetMainBundle:vagrantfile-local/sections:multi-machine.html.twig' with {'multi_machine': multi_machine} %}
             {% endfor %}

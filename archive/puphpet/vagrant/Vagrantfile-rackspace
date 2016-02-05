@@ -20,8 +20,12 @@ Vagrant.configure('2') do |config|
       machine_id.vm.hostname    = "#{machine['hostname']}"
       machine_id.nfs.functional = false
 
+      ssh_username = !data['ssh']['username'].nil? ?
+        data['ssh']['username'] :
+        'root'
+
       machine_id.ssh.private_key_path = "#{data['ssh']['private_key_path']}"
-      machine_id.ssh.username         = "#{data['ssh']['username']}"
+      machine_id.ssh.username         = "#{ssh_username}"
 
       machine_id.vm.provider :rackspace do |rs, override|
         override.vm.synced_folder ".", "/vagrant", type: "rsync"
@@ -41,10 +45,6 @@ Vagrant.configure('2') do |config|
             id: "#{i}"
         end
       end
-
-      ssh_username = !data['ssh']['username'].nil? ? 
-        data['ssh']['username'] : 
-        'vagrant'
 
       machine_id.vm.provision 'shell' do |s|
         s.path = 'puphpet/shell/initial-setup.sh'
